@@ -468,22 +468,20 @@ let decode (sctx, _) s =
   let s = string_of_buf out outlen in
   free out;
   s
-  
-let client_start ctx mech =
+
+let start f fname ctx mech =
   let sctx = allocate (ptr gsasl_session) gsasl_session_null in
-  let n = _gsasl_client_start ctx mech sctx in
-  check_error "gsasl_client_start" n;
+  let n = f ctx mech sctx in
+  check_error fname n;
   let sctx = !@ sctx in
   Gc.finalise gsasl_finish sctx;
   (sctx, ctx)
 
+let client_start ctx mech =
+  start _gsasl_client_start "gsasl_client_start" ctx mech
+
 let server_start ctx mech =
-  let sctx = allocate (ptr gsasl_session) gsasl_session_null in
-  let n = _gsasl_server_start ctx mech sctx in
-  check_error "gsasl_server_start" n;
-  let sctx = !@ sctx in
-  Gc.finalise gsasl_finish sctx;
-  (sctx, ctx)
+  start _gsasl_server_start "gsasl_server_start" ctx mech
 
 let mechanism_name (sctx, _) =
   _gsasl_mechanism_name sctx
