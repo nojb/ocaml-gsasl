@@ -1,0 +1,30 @@
+OASISFormat: 0.4
+Name: gsasl
+Version: 0.9.0
+Synopsis: Bindings to the GNU SASL library using Ctypes
+Authors: Nicolas Ojeda Bar
+License: LGPL
+Plugins: DevFiles (0.4), META (0.4)
+BuildTools: ocamlbuild
+
+Library gsasl
+  Path: lib
+  Modules: Gsasl
+  BuildDepends: ctypes, ctypes.foreign  
+
+Document gsasl
+  Title: Gsasl docs
+  Type: ocamlbuild (0.4)
+  BuildTools+: ocamldoc
+  Install: true
+  XOCamlbuildPath: lib
+  XOCamlbuildLibraries: gsasl
+
+# Executable test_gsasl
+#  Path: lib_test
+#  MainIs: test_gsasl.ml
+#  Build$: flag(tests)
+#  Custom: true
+#  CompiledObject: best
+#  Install: false
+#  BuildDepends: gsasl, cmdliner

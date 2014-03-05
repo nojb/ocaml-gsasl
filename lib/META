@@ -1,0 +1,12 @@
+# OASIS_START
+# DO NOT EDIT (digest: c3dd498d3b692b159dc033aafa2d45b1)
+version = "0.9.0"
+description = "Bindings to the GNU SASL library using Ctypes"
+requires = "ctypes ctypes.foreign"
+archive(byte) = "gsasl.cma"
+archive(byte, plugin) = "gsasl.cma"
+archive(native) = "gsasl.cmxa"
+archive(native, plugin) = "gsasl.cmxs"
+exists_if = "gsasl.cma"
+# OASIS_STOP
+
