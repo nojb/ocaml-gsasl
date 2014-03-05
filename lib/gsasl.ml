@@ -578,50 +578,44 @@ let base64_from s =
   free out;
   s
 
-let nonce datalen =
+let genbytes f fname datalen =
   let out = allocate_n char datalen in
-  let n = _gsasl_nonce out datalen in
-  check_error "gsasl_nonce" n;
-  string_of_buf out datalen
+  let n = f out datalen in
+  check_error fname n;
+  string_of_buf out datalen  
+
+let nonce datalen =
+  genbytes _gsasl_nonce "gsasl_nonce" datalen
 
 let random datalen =
-  let out = allocate_n char datalen in
-  let n = _gsasl_random out datalen in
-  check_error "gsasl_random" n;
-  string_of_buf out datalen
+  genbytes _gsasl_random "gsasl_random" datalen
+
+let hash f fname len s =
+  let out = allocate (ptr char) (from_voidp char null) in
+  let n = f s (String.length s) out in
+  check_error fname n;
+  let out = !@ out in
+  let s = string_of_buf out len in
+  free out;
+  s
+
+let hmac_hash f fname len key s =
+  let out = allocate (ptr char) (from_voidp char null) in
+  let n = f key (String.length key) s (String.length s) out in
+  check_error fname n;
+  let out = !@ out in
+  let s = string_of_buf out len in
+  free out;
+  s
 
 let md5 s =
-  let out = allocate (ptr char) (from_voidp char null) in
-  let n = _gsasl_md5 s (String.length s) out in
-  check_error "gsasl_md5" n;
-  let out = !@ out in
-  let s = string_of_buf out 16 in
-  free out;
-  s
+  hash _gsasl_md5 "gsasl_md5" 16 s
 
 let hmac_md5 key s =
-  let out = allocate (ptr char) (from_voidp char null) in
-  let n = _gsasl_hmac_md5 key (String.length key) s (String.length s) out in
-  check_error "gsasl_hmac_md5" n;
-  let out = !@ out in
-  let s = string_of_buf out 16 in
-  free out;
-  s
+  hmac_hash _gsasl_hmac_md5 "gsasl_hmac_md5" 16 key s
 
 let sha1 s =
-  let out = allocate (ptr char) (from_voidp char null) in
-  let n = _gsasl_sha1 s (String.length s) out in
-  check_error "gsasl_sha1" n;
-  let out = !@ out in
-  let s = string_of_buf out 20 in
-  free out;
-  s
+  hash _gsasl_sha1 "gsasl_sha1" 20 s
 
 let hmac_sha1 key s =
-  let out = allocate (ptr char) (from_voidp char null) in
-  let n = _gsasl_hmac_sha1 key (String.length key) s (String.length s) out in
-  check_error "gsasl_hmac_sha1" n;
-  let out = !@ out in
-  let s = string_of_buf out 20 in
-  free out;
-  s
+  hmac_hash _gsasl_hmac_sha1 "gsasl_hmac_sha1" 20 key s
