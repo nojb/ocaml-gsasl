@@ -35,7 +35,11 @@ This is a preliminary release of OCaml bindings for the
    val s : string = "SGVsbG8sIFdvcmxkIQ=="
    # Gsasl.base64_from s;;
    - : string = "Hello, World!"
-   ```
+   # let ctx = Gsasl.init ();;
+   val ctx : Gsasl.context = <abstr>
+   # Gsasl.client_mechlist ctx;;
+   - : string list = ["GSSAPI"; "OPENID20"; "SAML20"; "SCRAM-SHA-1"; "CRAM-MD5"; "DIGEST-MD5"; "SECURID"; "PLAIN"; "LOGIN"; "EXTERNAL"; "ANONYMOUS"]
+    ```
 
 5. Read the documentation in `lib/gsasl.mli`.
 
