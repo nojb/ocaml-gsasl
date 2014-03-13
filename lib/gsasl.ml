@@ -32,9 +32,16 @@ let gsasl_session : gsasl_session_t structure typ = structure "gsasl_session"
 let gsasl_null = from_voidp gsasl null
 let gsasl_session_null = from_voidp gsasl_session null
 
-type context = gsasl_t structure ptr
+type context = {
+  ctx : gsasl_t structure ptr;
+  mutable gc_cb :
+    (gsasl_t structure ptr -> gsasl_session_t structure ptr -> int -> int) option
+}
 
-type session = gsasl_session_t structure ptr * context
+type session = {
+  sctx : gsasl_session_t structure ptr;
+  gc_ctx : context
+}
 (* we keep a reference to the corresponding [context] object so that the GC does
    not collect it while a session is still alive. *)
 
@@ -247,125 +254,127 @@ let libgsasl =
   in
   loop names
 
+let foreign fname fn =
+  foreign ~from:libgsasl fname fn
+
 let _gsasl_check_version =
-  foreign ~from:libgsasl "gsasl_check_version"
-    (string_opt @-> returning string_opt)
+  foreign "gsasl_check_version" (string_opt @-> returning string_opt)
 
 let _gsasl_init =
-  foreign ~from:libgsasl "gsasl_init" (ptr (ptr gsasl) @-> returning int)
+  foreign "gsasl_init" (ptr (ptr gsasl) @-> returning int)
 
 let _gsasl_done =
-  foreign ~from:libgsasl "gsasl_done" (ptr gsasl @-> returning void)
+  foreign "gsasl_done" (ptr gsasl @-> returning void)
 
 let _gsasl_strerror =
-  foreign ~from:libgsasl "gsasl_strerror" (int @-> returning string)
+  foreign "gsasl_strerror" (int @-> returning string)
 
 let _gsasl_strerror_name =
-  foreign ~from:libgsasl "gsasl_strerror_name" (int @-> returning string)
+  foreign "gsasl_strerror_name" (int @-> returning string)
 
 let _gsasl_client_mechlist =
-  foreign ~from:libgsasl "gsasl_client_mechlist"
+  foreign "gsasl_client_mechlist"
     (ptr gsasl @-> ptr (ptr char) @-> returning int)
 
 let _gsasl_server_mechlist =
-  foreign ~from:libgsasl "gsasl_server_mechlist"
+  foreign "gsasl_server_mechlist"
     (ptr gsasl @-> ptr (ptr char) @-> returning int)
 
 let _gsasl_client_support_p =
-  foreign ~from:libgsasl "gsasl_client_support_p"
+  foreign "gsasl_client_support_p"
     (ptr gsasl @-> string @-> returning int)
 
 let _gsasl_client_suggest_mechanism =
-  foreign ~from:libgsasl "gsasl_client_suggest_mechanism"
+  foreign "gsasl_client_suggest_mechanism"
     (ptr gsasl @-> string @-> returning string_opt)
 
 let _gsasl_client_start =
-  foreign ~from:libgsasl "gsasl_client_start"
+  foreign "gsasl_client_start"
     (ptr gsasl @-> string @-> ptr (ptr gsasl_session) @-> returning int)
 
 let _gsasl_server_start =
-  foreign ~from:libgsasl "gsasl_server_start"
+  foreign "gsasl_server_start"
     (ptr gsasl @-> string @-> ptr (ptr gsasl_session) @-> returning int)
 
 let _gsasl_finish =
-  foreign ~from:libgsasl "gsasl_finish"
+  foreign "gsasl_finish"
     (ptr gsasl_session @-> returning void)
 
 let _gsasl_encode =
-  foreign ~from:libgsasl "gsasl_encode"
+  foreign "gsasl_encode"
     (ptr gsasl_session @-> string @-> int @-> ptr (ptr char) @-> ptr int @-> returning int)
 
 let _gsasl_decode =
-  foreign ~from:libgsasl "gsasl_decode"
+  foreign "gsasl_decode"
     (ptr gsasl_session @-> string @-> int @-> ptr (ptr char) @-> ptr int @-> returning int)
 
 let _gsasl_mechanism_name =
-  foreign ~from:libgsasl "gsasl_mechanism_name"
+  foreign "gsasl_mechanism_name"
     (ptr gsasl_session @-> returning string_opt)
 
 let _gsasl_property_set_raw =
-  foreign ~from:libgsasl "gsasl_property_set_raw"
+  foreign "gsasl_property_set_raw"
     (ptr gsasl_session @-> int @-> string @-> int @-> returning void)
 
 let _gsasl_property_get =
-  foreign ~from:libgsasl "gsasl_property_get"
+  foreign "gsasl_property_get"
     (ptr gsasl_session @-> int @-> returning string_opt)
 
 let _gsasl_step =
-  foreign ~from:libgsasl "gsasl_step"
+  foreign "gsasl_step"
     (ptr gsasl_session @-> string @-> int @-> ptr (ptr_opt char) @-> ptr int @-> returning int)
 
 let _gsasl_step64 =
-  foreign ~from:libgsasl "gsasl_step64"
+  foreign "gsasl_step64"
     (ptr gsasl_session @-> string @-> ptr (ptr_opt char) @-> returning int)
 
 let _gsasl_callback_set =
-  foreign ~from:libgsasl "gsasl_callback_set"
+  foreign "gsasl_callback_set"
     (ptr gsasl @-> funptr (ptr gsasl @-> ptr gsasl_session @-> int @-> returning int) @->
      returning void)
 
 let _gsasl_callback =
-  foreign ~from:libgsasl "gsasl_callback"
+  foreign "gsasl_callback"
     (ptr gsasl @-> ptr gsasl_session @-> int @-> returning int)
 
 let _gsasl_free =
-  foreign ~from:libgsasl "gsasl_free"
+  foreign "gsasl_free"
     (ptr void @-> returning void)
 
 let _gsasl_saslprep =
-  foreign ~from:libgsasl "gsasl_saslprep"
+  foreign "gsasl_saslprep"
     (string @-> int @-> ptr (ptr char) @-> ptr int @-> returning int)
 
 let _gsasl_base64_to =
-  foreign ~from:libgsasl "gsasl_base64_to"
+  foreign "gsasl_base64_to"
     (string @-> int @-> ptr (ptr char) @-> ptr int @-> returning int)
 
 let _gsasl_base64_from =
-  foreign ~from:libgsasl "gsasl_base64_from"
+  foreign "gsasl_base64_from"
     (string @-> int @-> ptr (ptr char) @-> ptr int @-> returning int)
 
 let _gsasl_nonce =
-  foreign ~from:libgsasl "gsasl_nonce"
+  foreign "gsasl_nonce"
     (ptr char @-> int @-> returning int)
 
 let _gsasl_random =
-  foreign ~from:libgsasl "gsasl_random"
+  foreign "gsasl_random"
     (ptr char @-> int @-> returning int)
 
 let _gsasl_md5 =
-  foreign ~from:libgsasl "gsasl_md5"
+  foreign "gsasl_md5"
     (string @-> int @-> ptr (ptr char) @-> returning int)
 
 let _gsasl_hmac_md5 =
-  foreign ~from:libgsasl "gsasl_hmac_md5"
+  foreign "gsasl_hmac_md5"
     (string @-> int @-> string @-> int @-> ptr (ptr char) @-> returning int)
 
 let _gsasl_sha1 =
-  foreign ~from:libgsasl "gsasl_sha1"
+  foreign "gsasl_sha1"
     (string @-> int @-> ptr (ptr char) @-> returning int)
 
 let _gsasl_hmac_sha1 =
-  foreign ~from:libgsasl "gsasl_hmac_sha1"
+  foreign "gsasl_hmac_sha1"
     (string @-> int @-> string @-> int @-> ptr (ptr char) @-> returning int)
 
 let strerror n =
@@ -396,7 +405,7 @@ let init () =
   check_error "gsasl_init" n;
   let ctx = !@ ctx in
   Gc.finalise gsasl_done ctx;
-  ctx
+  {ctx; gc_cb = None}
 
 let split_list s =
   let get_next pos =
@@ -414,7 +423,7 @@ let split_list s =
   in
   List.filter (fun s -> s <> "" ) (add 0 [])
 
-let mechlist fname f ctx =
+let mechlist fname f {ctx} =
   let out = allocate (ptr char) (from_voidp char null) in
   let n = f ctx out in
   check_error fname n;
@@ -429,11 +438,11 @@ let client_mechlist ctx =
 let server_mechlist ctx =
   mechlist "gsasl_server_mechlist" _gsasl_server_mechlist ctx
 
-let client_support_p ctx mech =
+let client_support_p {ctx} mech =
   let n = _gsasl_client_support_p ctx mech in
   n <> 0
 
-let client_suggest_mechanism ctx mechlist =
+let client_suggest_mechanism {ctx} mechlist =
   _gsasl_client_suggest_mechanism ctx (String.concat " " mechlist)
 
 let gsasl_finish sctx =
@@ -447,7 +456,7 @@ let string_of_buf p plen =
   done;
   s
 
-let encode (sctx, _) s =
+let encode {sctx} s =
   let out = allocate (ptr char) (from_voidp char null) in
   let outlen = allocate int 0 in
   let n = _gsasl_encode sctx s (String.length s) out outlen in
@@ -458,7 +467,7 @@ let encode (sctx, _) s =
   free out;
   s
 
-let decode (sctx, _) s =
+let decode {sctx} s =
   let out = allocate (ptr char) (from_voidp char null) in
   let outlen = allocate int 0 in
   let n = _gsasl_decode sctx s (String.length s) out outlen in
@@ -471,11 +480,11 @@ let decode (sctx, _) s =
 
 let start f fname ctx mech =
   let sctx = allocate (ptr gsasl_session) gsasl_session_null in
-  let n = f ctx mech sctx in
+  let n = f ctx.ctx mech sctx in
   check_error fname n;
   let sctx = !@ sctx in
   Gc.finalise gsasl_finish sctx;
-  (sctx, ctx)
+  {sctx; gc_ctx = ctx}
 
 let client_start ctx mech =
   start _gsasl_client_start "gsasl_client_start" ctx mech
@@ -483,16 +492,16 @@ let client_start ctx mech =
 let server_start ctx mech =
   start _gsasl_server_start "gsasl_server_start" ctx mech
 
-let mechanism_name (sctx, _) =
+let mechanism_name {sctx} =
   _gsasl_mechanism_name sctx
 
-let property_set (sctx, _) prop data =
+let property_set {sctx} prop data =
   _gsasl_property_set_raw sctx (int_of_property prop) data (String.length data)
 
-let property_get (sctx, _) prop =
+let property_get {sctx} prop =
   _gsasl_property_get sctx (int_of_property prop)
 
-let step (sctx, _) buf =
+let step {sctx} buf =
   let p = allocate (ptr_opt char) None in
   let plen = allocate int 0 in
   let n = _gsasl_step sctx buf (String.length buf) p plen in
@@ -512,7 +521,7 @@ let step (sctx, _) buf =
     free p;
     rc, s
 
-let step64 (sctx, _) buf =
+let step64 {sctx} buf =
   let p = allocate (ptr_opt char) None in
   let n = _gsasl_step64 sctx buf p in
   check_error "gsasl_step64" n;
@@ -533,15 +542,17 @@ let step64 (sctx, _) buf =
 type callback = context -> session -> property -> [ `OK | `NO_CALLBACK ]
 
 let callback_set ctx callback =
-  _gsasl_callback_set ctx
-    (fun ctx sctx prop ->
-       try match callback ctx (sctx, ctx) (property_of_int prop) with
-       | `OK -> 0
-       | `NO_CALLBACK -> 51
-       with
-       | _ -> 51)
+  let cb _ctx sctx prop =
+    try match callback ctx {sctx; gc_ctx = ctx} (property_of_int prop) with
+      | `OK -> 0
+      | `NO_CALLBACK -> 51
+    with
+    | _ -> 51
+  in
+  ctx.gc_cb <- Some cb;
+  _gsasl_callback_set ctx.ctx cb
 
-let callback ctx (sctx, _) prop =
+let callback {ctx} {sctx} prop =
   let n = _gsasl_callback ctx sctx (int_of_property prop) in
   match n with
   | 0 -> `OK

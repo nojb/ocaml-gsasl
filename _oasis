@@ -10,7 +10,13 @@ BuildTools: ocamlbuild
 Library gsasl
   Path: lib
   Modules: Gsasl
-  BuildDepends: ctypes, ctypes.foreign  
+  # The next line does not seem to do what it is supposed
+  # to do: if we do not load the library with [Dl.dlopen]
+  # at runtime, then even if the line below is present, we
+  # get `symbol undefined' errors when we load the module.
+  # CCLib: -lgsasl
+  Install: true
+  BuildDepends: ctypes, ctypes.foreign
 
 Document gsasl
   Title: Gsasl docs
