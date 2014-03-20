@@ -45,4 +45,4 @@ This is a preliminary release of OCaml bindings for the
 
 ## Comments
 
-Comments, bug reports and feature requests are very welcome: n.oje.bar@gmail.com
+Comments, bug reports and feature requests are very welcome: n.oje.bar@gmail.com.
