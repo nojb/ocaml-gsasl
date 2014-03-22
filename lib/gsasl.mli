@@ -218,13 +218,13 @@ type mech = string
     mechanisms. *)
 
 (** The type of callbacks. *)
-type callback = context -> session -> property -> [ `OK | `NO_CALLBACK ]
-(** The callback will be used, via {!gsasl_callback}, by mechanisms to discover
-    various parameters (such as username and passwords).  The callback function
-    will be called with a {!gsasl_property} value indicating the requested
-    behaviour.  For example, for [ANONYMOUS_TOKEN], the function is expected to
-    invoke [gsasl_property_set ctx ANONYMOUS_TOKEN "token"] where ["token"] is
-    the anonymous token the application wishes the SASL mechanism to use.
+type callback = property -> [ `OK | `NO_CALLBACK ]
+(** The callback will be used by mechanisms to discover various parameters (such
+    as username and passwords).  The callback function will be called with a
+    {!property} value indicating the requested behaviour.  For example, for
+    [ANONYMOUS_TOKEN], the function is expected to invoke [property_set ctx
+    ANONYMOUS_TOKEN "token"] where ["token"] is the anonymous token the
+    application wishes the SASL mechanism to use.
 
     Which properties you should handle is up to you. If you handle the request,
     you should return [`OK].  If you don't know how to respond to a certain
@@ -232,7 +232,7 @@ type callback = context -> session -> property -> [ `OK | `NO_CALLBACK ]
     authentication identity [AUTHID], authorization identity [AUTHZID], and
     password [PASSWORD].
 
-    See {!gsasl_callback_set}. *)
+    See {!callback_set}. *)
 
 val check_version : ?req_version:string -> unit -> string
 (** [check_version ?rver] checks that the version of the library is at minimum
@@ -298,8 +298,8 @@ val step : session -> string -> [ `OK | `NEEDS_MORE ] * string
     the application), and returns the data that should be sent to the server. *)
 
 val step64 : session -> string -> [ `OK | `NEEDS_MORE ] * string
-(** [step64 sctx data] is a simple wrapper around {!gsasl_step} that base64
-    decodes the input and base64 encodes the output. *)
+(** [step64 sctx data] is a simple wrapper around {!step} that base64 decodes
+    the input and base64 encodes the output. *)
 
 val callback_set : context -> callback -> unit
 (** [callback_set ctx cb] will store the application provided callback
@@ -308,16 +308,6 @@ val callback_set : context -> callback -> unit
     If the callback raises any exception, the exception will be supressed and
     the value [`NO_CALLBACK] will be returned. *)
   
-val callback : context -> session -> property -> [ `OK | `NO_CALLBACK ]
-(** [callback ctx sctx prop] will invoke the application callback.  The [prop]
-    value indicate what the callback is expected to do.  For example, for
-    [ANONYMOUS_TOKEN], the function is expected to invoke [property_set sctx
-    ANONYMOUS_TOKEN "token"] where ["token"] is the anonymous token the
-    application wishes the SASL mechanism to use.
-
-    This function returns whatever the application callback returns, or
-    [`NO_CALLBACK] if no application was known. *)
-
 val saslprep : ?allow_unassigned:bool -> string -> string
 (** [saslprep allow s] will prepare the string [s] (assumed to be UTF8) using
     SASLprep.  This only works if [libgsasl] has been compiled with [libidn]

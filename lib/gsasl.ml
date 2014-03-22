@@ -487,7 +487,7 @@ let step64 =
       free p;
       rc, s
 
-type callback = context -> session -> property -> [ `OK | `NO_CALLBACK ]
+type callback = property -> [ `OK | `NO_CALLBACK ]
 
 let callback_set =
   let gsasl_callback_set = foreign "gsasl_callback_set"
@@ -495,8 +495,8 @@ let callback_set =
        returning void)
   in
   fun ctx callback ->
-    let cb _ctx sctx prop =
-      try match callback ctx {sctx; gc_ctx = ctx} (property_of_int prop) with
+    let cb _ _ prop =
+      try match callback (property_of_int prop) with
         | `OK -> 0
         | `NO_CALLBACK -> 51
       with
@@ -504,17 +504,6 @@ let callback_set =
     in
     ctx.gc_cb <- Some cb;
     gsasl_callback_set ctx.ctx cb
-
-let callback =
-  let gsasl_callback =
-    foreign "gsasl_callback" (ptr gsasl @-> ptr gsasl_session @-> int @-> returning int)
-  in
-  fun {ctx} {sctx} prop ->
-    let n = gsasl_callback ctx sctx (int_of_property prop) in
-    match n with
-    | 0 -> `OK
-    | 51 -> `NO_CALLBACK
-    | _ -> assert false
 
 let saslprep =
   let gsasl_saslprep =
