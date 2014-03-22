@@ -31,7 +31,7 @@ This is a preliminary release of OCaml bindings for the
    # #use "topfind";;
    - : unit = ()
    # #require "gsasl";;
-    # let s = Gsasl.base64_to "Hello, World!";;
+   # let s = Gsasl.base64_to "Hello, World!";;
    val s : string = "SGVsbG8sIFdvcmxkIQ=="
    # Gsasl.base64_from s;;
    - : string = "Hello, World!"
