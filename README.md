@@ -12,27 +12,12 @@ This is a preliminary release of OCaml bindings for the
    brew install gsasl
    ```
 
-2. Install `ctypes`.  Assuming you are using [OPAM](https://opam.ocaml.org),
-   this is as simply as typing
+2. Install with [OPAM](http://opam.ocaml.org).
    ```sh
-   opam install ctypes
+   opam install gsasl
    ```
 
-3. Download the current version of `ocaml-gsasl`.
-   ```sh
-   cd ~/tmp
-   git clone https://github.com/nojb/ocaml-gsasl
-   ```
-
-4. Configure, build and install (this requires `findlib`)
-   ```sh
-   cd ocaml-gsasl
-   ./configure
-   make
-   make install
-   ```
-
-5. To see if it is working, you can try it out in the `ocaml` toplevel:
+3. To see if it is working, you can try it out in the `ocaml` toplevel:
    ```ocaml
    # #use "topfind";;
    - : unit = ()
@@ -47,7 +32,7 @@ This is a preliminary release of OCaml bindings for the
    - : string list = ["GSSAPI"; "OPENID20"; "SAML20"; "SCRAM-SHA-1"; "CRAM-MD5"; "DIGEST-MD5"; "SECURID"; "PLAIN"; "LOGIN"; "EXTERNAL"; "ANONYMOUS"]
     ```
 
-6. Read the documentation in `lib/gsasl.mli`.
+4. Read the documentation in `lib/gsasl.mli`.
 
 ## Comments
 
