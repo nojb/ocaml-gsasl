@@ -1,6 +1,6 @@
 OASISFormat:    0.4
 Name:           gsasl
-Version:        0.9.0
+Version:        0.10.0
 Synopsis:       Bindings to the GNU SASL library using Ctypes
 Authors:        Nicolas Ojeda Bar
 Maintainers:    Nicolas Ojeda Bar <n.oje.bar@gmail.com>
