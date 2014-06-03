@@ -2,3 +2,5 @@ _build
 setup.log
 setup.data
 *.docdir
+*.byte
+*.native

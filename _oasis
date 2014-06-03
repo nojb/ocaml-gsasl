@@ -1,30 +1,39 @@
-OASISFormat: 0.4
-Name: gsasl
-Version: 0.9.0
-Synopsis: Bindings to the GNU SASL library using Ctypes
-Authors: Nicolas Ojeda Bar
-License: LGPL
-Plugins: DevFiles (0.4), META (0.4)
-BuildTools: ocamlbuild
+OASISFormat:    0.4
+Name:           gsasl
+Version:        0.9.0
+Synopsis:       Bindings to the GNU SASL library using Ctypes
+Authors:        Nicolas Ojeda Bar
+Maintainers:    Nicolas Ojeda Bar <n.oje.bar@gmail.com>
+License:        LGPL
+Plugins:        DevFiles (0.4), META (0.4)
+Homepage:       http://github.com/nojb/ocaml-gsasl
+BuildTools:     ocamlbuild
 
 Library gsasl
-  Path: lib
-  Modules: Gsasl
-  # The next line does not seem to do what it is supposed
-  # to do: if we do not load the library with [Dl.dlopen]
-  # at runtime, then even if the line below is present, we
-  # get `symbol undefined' errors when we load the module.
-  # CCLib: -lgsasl
-  Install: true
-  BuildDepends: ctypes, ctypes.foreign
-
+  Path:             lib
+  Modules:          Gsasl
+  InternalModules:  Gsasl_bindings, Gsasl_generated
+  CSources:         gsasl_stubs.c
+  CCOpt:            -I $pkg_ctypes/..
+  CCLib:            -lgsasl
+  Install:          true
+  BuildDepends:     ctypes, ctypes.foreign, ctypes.stubs
+  BuildTools+:      gsasl_genstubs
+  
 Document gsasl
-  Title: Gsasl docs
-  Type: ocamlbuild (0.4)
-  BuildTools+: ocamldoc
-  Install: true
-  XOCamlbuildPath: lib
+  Title:                Gsasl docs
+  Type:                 ocamlbuild (0.4)
+  BuildTools+:          ocamldoc
+  Install:              true
+  XOCamlbuildPath:      lib
   XOCamlbuildLibraries: gsasl
+
+Executable gsasl_genstubs
+  Path:                 lib
+  MainIs:               gsasl_genstubs.ml
+  CompiledObject:       byte
+  Install:              false
+  BuildDepends:         ctypes, ctypes.foreign, ctypes.stubs
 
 # Executable test_gsasl
 #  Path: lib_test
