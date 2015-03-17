@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2e48c017b4816b7d4c081acfbc411894)
-version = "0.9.0"
+# DO NOT EDIT (digest: 2773ae56633f4bb7e34b3b00400c741d)
+version = "0.10.0"
 description = "Bindings to the GNU SASL library using Ctypes"
 requires = "ctypes ctypes.foreign ctypes.stubs"
 archive(byte) = "gsasl.cma"

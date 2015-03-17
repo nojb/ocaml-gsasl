@@ -1,8 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: ffc19715b4513031490698bfbb53dda1)
+# DO NOT EDIT (digest: 1d5308efc50a00abeb14c388e8be0857)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
+true: annot, bin_annot
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
 ".bzr": -traverse
@@ -19,7 +20,7 @@
 "lib/gsasl_genstubs.byte": pkg_ctypes.stubs
 # Library gsasl
 "lib/gsasl.cmxs": use_gsasl
-<lib/*.ml{,i}>: oasis_library_gsasl_ccopt
+<lib/*.ml{,i,y}>: oasis_library_gsasl_ccopt
 "lib/gsasl_stubs.c": oasis_library_gsasl_ccopt
 <lib/gsasl.{cma,cmxa}>: oasis_library_gsasl_cclib
 "lib/libgsasl_stubs.lib": oasis_library_gsasl_cclib
@@ -27,9 +28,9 @@
 "lib/libgsasl_stubs.a": oasis_library_gsasl_cclib
 "lib/dllgsasl_stubs.so": oasis_library_gsasl_cclib
 <lib/gsasl.{cma,cmxa}>: use_libgsasl_stubs
-<lib/*.ml{,i}>: pkg_ctypes
-<lib/*.ml{,i}>: pkg_ctypes.foreign
-<lib/*.ml{,i}>: pkg_ctypes.stubs
+<lib/*.ml{,i,y}>: pkg_ctypes
+<lib/*.ml{,i,y}>: pkg_ctypes.foreign
+<lib/*.ml{,i,y}>: pkg_ctypes.stubs
 "lib/gsasl_stubs.c": pkg_ctypes
 "lib/gsasl_stubs.c": pkg_ctypes.foreign
 "lib/gsasl_stubs.c": pkg_ctypes.stubs
