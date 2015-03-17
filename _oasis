@@ -14,7 +14,7 @@ Library gsasl
   Modules:          Gsasl
   InternalModules:  Gsasl_bindings, Gsasl_generated
   CSources:         gsasl_stubs.c
-  CCOpt:            -I $pkg_ctypes/..
+  CCOpt:            -I $pkg_ctypes/.. -I $pkg_ctypes
   CCLib:            -lgsasl
   Install:          true
   BuildDepends:     ctypes, ctypes.foreign, ctypes.stubs
